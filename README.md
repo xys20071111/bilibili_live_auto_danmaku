@@ -1,6 +1,8 @@
 # bilibili_live_auto_danmaku
-B站直播弹幕助手----自动感谢礼物/开通舰长/续费舰长/SC
-
+B站直播弹幕助手----自动感谢礼物/开通舰长/续费舰长/SC  
+只在Python 3.9下测试过  
+[![LICENSE](https://img.shields.io/badge/LICENSE-GPLv3-red)](LICENSE)
+![Python](https://img.shields.io/badge/Python-3.9-blue)
 ## 使用方法
 
 1、pip3 install -r requirements.txt  
