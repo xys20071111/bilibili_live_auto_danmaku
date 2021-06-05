@@ -1,0 +1,9 @@
+{
+    "optional_function": {
+        "not_wellcome": false,
+        "debug": false
+    },
+    "cold_down_time":10,
+    "live_start":"直播开始啦，来了来了",
+    "live_end":"直播结束啦，再见"
+}
