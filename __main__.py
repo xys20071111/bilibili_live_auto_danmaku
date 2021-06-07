@@ -71,6 +71,7 @@ def main():
         print_log('{}购买了舰长'.format(user_nickname))
     # 以下为感谢礼物的逻辑
     cold_time = {'last_cold_down': -1}
+    lock = asyncio.Lock()
 
     @live_danmaku.on('SEND_GIFT')
     async def 感谢礼物(info):
@@ -81,10 +82,13 @@ def main():
         text = '感谢{}投喂的{}'.format(user_nickname, gift_name)
         log_text = '{}投喂了{}个{}'.format(user_nickname, gift_num, gift_name)
         print_log(log_text)
-        if (cold_time['last_cold_down'] + config['cold_down_time']) < int(time.time()) or cold_time['last_cold_down'] == -1:
-            if not data['uid'] in ntu.list:
-                await send_danmaku(text=text, liveroom=liveroom)
-                cold_time['last_cold_down'] = time.time()
+        await lock.acquire()
+        if lock.locked():
+            if (cold_time['last_cold_down'] + config['cold_down_time']) < int(time.time()) or cold_time['last_cold_down'] == -1:
+                if not data['uid'] in ntu.list:
+                    await send_danmaku(text=text, liveroom=liveroom)
+                    cold_time['last_cold_down'] = time.time()
+            lock.release()
     # 以上为感谢礼物的逻辑
 
     @live_danmaku.on('COMBO_SEND')
