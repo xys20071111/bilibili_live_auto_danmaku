@@ -49,10 +49,9 @@ def main():
     # 连接到房间弹幕
     global live_danmaku
     live_danmaku = live.LiveDanmaku(room_real_id)
-    # 初始化 发送宣传语 模块
-    ga = guard_advertsing(
-        credential=verify, room=liveroom, room_info=room_info)
-    ga.start()
+    # 初始化 发送宣传语 模块（模块故障，无法发送弹幕）
+    ga = guard_advertsing(credential = verify, room_id = room_real_id)
+    #ga.start()
     # 激活 不感谢用户列表 的实时更新（有问题）
     not_thanks_user_watcher = Observer()
     ntu = not_thanks_user()
