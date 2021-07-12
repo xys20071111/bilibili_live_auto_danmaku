@@ -1,9 +1,22 @@
 {
+    "room_id": 114514,
+    "verify": {
+        "sessdata": "sessdata",
+        "csrf": "bili_jct",
+        "buvid3": "buvid3"
+    },
     "optional_function": {
         "not_wellcome": false,
         "debug": false
     },
-    "cold_down_time":10,
-    "live_start":"直播开始啦，来了来了",
-    "live_end":"直播结束啦，再见"
+    "cold_down_time": 10,
+    "danmakus": {
+        "live_start": "直播开始啦，来了来了",
+        "live_end": "直播结束啦，再见",
+        "gift": "感谢{name}投喂的{gift}",
+        "gift_total": "感谢{name}投喂的一共{count}个{gift},感谢！",
+        "guard": "感谢{name}的舰长",
+        "sc": "感谢{name}的SC",
+        "unwelcome": "{name}入场，房管注意禁言"
+    }
 }

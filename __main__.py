@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 import asyncio
 import json
-import sys
 import time
 from bilibili_api import live, Credential
 from bilibili_api.utils import Danmaku
@@ -27,16 +26,13 @@ class not_thanks_user(FileSystemEventHandler):
 
 def main():
     print_log("弹幕冷却时间:{}".format(config['cold_down_time']))
-    # 打开验证信息文件
-    verify_file = open(sys.argv[2], mode='r', encoding='utf8')
     # 解析验证信息
-    verify_info = json.load(verify_file)
-    verify_file.close()
+    verify_info = config['verify']
     # 创建验证数据
     verify = Credential(sessdata=verify_info['sessdata'],
                         bili_jct=verify_info['csrf'],
                         buvid3=verify_info['buvid3'])
-    display_room_id = int(sys.argv[1])
+    display_room_id = int(config['room_id'])
     # 解析房间信息
     liveroom = live.LiveRoom(
         room_display_id=display_room_id, credential=verify)
@@ -50,8 +46,8 @@ def main():
     global live_danmaku
     live_danmaku = live.LiveDanmaku(room_real_id)
     # 初始化 发送宣传语 模块（模块故障，无法发送弹幕）
-    ga = guard_advertsing(credential = verify, room_id = room_real_id)
-    #ga.start()
+    ga = guard_advertsing(credential=verify, room_id=room_real_id)
+    # ga.start()
     # 激活 不感谢用户列表 的实时更新（有问题）
     not_thanks_user_watcher = Observer()
     ntu = not_thanks_user()
@@ -64,7 +60,7 @@ def main():
     async def 感谢舰长(info):
         data = info['data']['data']
         user_nickname = data['username']
-        text = '感谢{}的舰长'.format(user_nickname)
+        text = config['danmakus']['guard'].format(name=user_nickname)
         if not data['uid'] in ntu.list:
             await send_danmaku(text=text, liveroom=liveroom)
         print_log('{}购买了舰长'.format(user_nickname))
@@ -78,8 +74,10 @@ def main():
         user_nickname = data['uname']
         gift_name = data['giftName']
         gift_num = data['super_gift_num']
-        text = '感谢{}投喂的{}'.format(user_nickname, gift_name)
-        log_text = '{}投喂了{}个{}'.format(user_nickname, gift_num, gift_name)
+        text = config['danmakus']['gift'].format(
+            name=user_nickname, gift=gift_name)
+        log_text = '{name}投喂了{count}个{gift}'.format(
+            name=user_nickname, count=gift_num, gift=gift_name)
         print_log(log_text)
         await lock.acquire()
         if lock.locked():
@@ -96,8 +94,8 @@ def main():
         user_nickname = data['uname']
         gift_name = data['gift_name']
         gift_count = data['total_num']
-        text = '感谢{}投喂的一共{}个{},感谢！'.format(
-            user_nickname, gift_count, gift_name)
+        text = config['danmakus']['gift_total'].format(
+            name=user_nickname, count=gift_count, gift=gift_name)
         print_log(text)
         if not data['uid'] in ntu.list:
             await send_danmaku(text=text, liveroom=liveroom)
@@ -106,21 +104,21 @@ def main():
     async def 感谢SC(info):
         data = info['data']['data']
         user_nickname = data['user_info']['uname']
-        text = '感谢{}的SC'.format(user_nickname)
+        text = config['danmakus']['sc'].format(name=user_nickname)
         if not data['uid'] in ntu.list:
             await send_danmaku(text=text, liveroom=liveroom)
         print_log('感谢{}的SC'.format(user_nickname))
 
     @live_danmaku.on('LIVE')
     async def 直播开始(useless_arg):
-        dan = Danmaku.Danmaku(config['live_start'])
+        dan = Danmaku.Danmaku(config['danmakus']['live_start'])
         await liveroom.send_danmaku(danmaku=dan)
         print_log('直播开始')
         # ga.live_start()
 
     @live_danmaku.on('PREPARING')
     async def 直播结束(useless_arg):
-        dan = Danmaku.Danmaku(config['live_end'])
+        dan = Danmaku.Danmaku(config['danmakus']['live_end'])
         await liveroom.send_danmaku(danmaku=dan)
         print_log('直播结束')
         # ga.live_end()
@@ -130,9 +128,9 @@ def main():
         data = info['data']['data']
         print_log('用户 {} uid:{} 被禁言'.format(data['uname'], data['uid']))
 
-    # 可选功能放在这行注释下面的with里
+    # 可选功能列表
     function_list = config['optional_function']
-    #可选功能 不受欢迎的用户提示
+    # 可选功能 不受欢迎的用户提示
     if function_list['not_wellcome']:
         print_log('不受欢迎用户提示功能已打开')
 
@@ -142,7 +140,8 @@ def main():
             with open('./user_not_welcome.json', mode='r', encoding='utf8') as f:
                 black_list = json.load(f)
                 if data['uid'] in black_list:
-                    text = '{}入场，房管注意禁言'.format(data['uname'])
+                    text = config['danmakus']['unwelcome'].format(
+                        name=data['uname'])
                     dan = Danmaku.Danmaku(text=text)
                     await liveroom.send_danmaku(danmaku=dan)
                     print_log('不受欢迎的用户{}进入'.format(data['uname']))
@@ -156,9 +155,6 @@ def main():
 
 if __name__ == '__main__':
     print('B站直播场控系统v0.2')
-    if len(sys.argv) < 3:
-        print('使用方法：./__main__.py <房间号> <验证文件>')
-        sys.exit(1)
     with open('./config.json', 'r', encoding='utf8') as f:
         global config
         config = json.load(f)
