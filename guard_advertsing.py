@@ -1,6 +1,12 @@
+##############################
+#                            #
+#       模块无法正常工作        #
+#                            #
+##############################
 import threading
 import time
 import json
+import asyncio
 from bilibili_api import live
 from bilibili_api.utils.Danmaku import Danmaku
 from utils.logger import print_log
@@ -23,7 +29,7 @@ class guard_advertsing(threading.Thread):
         while True:
             self._lock.acquire()
             if self.is_living:
-                send_danmaku(self.config['advertise'],self._liveroom).send(None)
+                asyncio.new_event_loop().run_until_complete(send_danmaku(self.config['advertise'],self._liveroom))
                 print_log('发送宣传语')
             self._lock.release()
             time.sleep(self.config['interval'])
