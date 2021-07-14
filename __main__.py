@@ -4,7 +4,6 @@ import json
 import time
 from bilibili_api import live, Credential
 from bilibili_api.utils import Danmaku
-from guard_advertsing import guard_advertsing
 from utils.logger import print_log
 from utils.send_danmaku import send_danmaku
 from watchdog.observers import Observer
@@ -45,9 +44,6 @@ def main():
     # 连接到房间弹幕
     global live_danmaku
     live_danmaku = live.LiveDanmaku(room_real_id)
-    # 初始化 发送宣传语 模块（模块故障，无法发送弹幕）
-    ga = guard_advertsing(credential=verify, room_id=room_real_id)
-    # ga.start()
     # 激活 不感谢用户列表 的实时更新（有问题）
     not_thanks_user_watcher = Observer()
     ntu = not_thanks_user()
@@ -114,7 +110,6 @@ def main():
         dan = Danmaku.Danmaku(config['danmakus']['live_start'])
         await liveroom.send_danmaku(danmaku=dan)
         print_log('直播开始')
-        # ga.live_start()
 
     @live_danmaku.on('PREPARING')
     async def 直播结束(useless_arg):
@@ -149,6 +144,19 @@ def main():
         @live_danmaku.on('ALL')
         async def 调试信息(info):
             print(info['data']['cmd'])
+    if function_list['guard_adveritse']:
+        from guard_advertsing import guard_advertsing
+        # 初始化 宣传语模块
+        ga = guard_advertsing(credential=verify, room_id=room_real_id)
+        ga.start()
+
+        @live_danmaku.on('LIVE')
+        async def 宣传开始(useless_arg):
+            ga.live_start()
+
+        @live_danmaku.on('PREPARING')
+        async def 宣传结束():
+            ga.live_end()
 
     asyncio.get_event_loop().run_until_complete(live_danmaku.connect())
 

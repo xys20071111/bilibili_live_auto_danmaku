@@ -7,7 +7,8 @@
     },
     "optional_function": {
         "not_wellcome": false,
-        "debug": false
+        "debug": false,
+        "guard_adveritse":false
     },
     "cold_down_time": 10,
     "danmakus": {
