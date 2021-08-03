@@ -1,5 +1,7 @@
 verify.json
+config.json
 __pycache__
 *.log
 optional_function_config.json
 .vscode
+config.json
