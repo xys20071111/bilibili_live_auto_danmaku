@@ -2,6 +2,6 @@ verify.json
 config.json
 __pycache__
 *.log
-optional_function_config.json
+user_not_thanks.json
+user_not_welcome.json
 .vscode
-config.json

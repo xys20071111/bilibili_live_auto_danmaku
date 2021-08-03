@@ -1,7 +1,7 @@
 import json
 import asyncio
 import time
-from utils import send_danmaku
+from utils.send_danmaku import send_danmaku
 from utils.logger import print_log
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
@@ -30,9 +30,9 @@ not_thanks_user_watcher.start()
 
 liveroom = config.get_live_room()
 danmaku_template = config.get_danmakes()
-cold_time = config.get_danmaku_cold_down_time()
+danmaku_cold_time = config.get_danmaku_cold_down_time()
 
-print_log("弹幕冷却时间:{}".format(cold_time))
+print_log("弹幕冷却时间:{}".format(danmaku_cold_time))
 
 
 async def guard_buy(info):
@@ -53,14 +53,14 @@ async def send_gift(info):
     user_nickname = data['uname']
     gift_name = data['giftName']
     gift_num = data['super_gift_num']
-    text = config['danmakus']['gift'].format(
+    text = danmaku_template['gift'].format(
         name=user_nickname, gift=gift_name)
     log_text = '{name}投喂了{count}个{gift}'.format(
         name=user_nickname, count=gift_num, gift=gift_name)
     print_log(log_text)
     await lock.acquire()
     if lock.locked():
-        if (cold_time['last_cold_down'] + config['cold_down_time']) < int(time.time()) or cold_time['last_cold_down'] == -1:
+        if (cold_time['last_cold_down'] + danmaku_cold_time) < int(time.time()) or cold_time['last_cold_down'] == -1:
             if not data['uid'] in ntu.list:
                 await send_danmaku(text=text, liveroom=liveroom)
                 cold_time['last_cold_down'] = time.time()
@@ -73,7 +73,7 @@ async def combo_send(info):
     user_nickname = data['uname']
     gift_name = data['gift_name']
     gift_count = data['total_num']
-    text = config['danmakus']['gift_total'].format(
+    text = danmaku_template['gift_total'].format(
         name=user_nickname, count=gift_count, gift=gift_name)
     print_log(text)
     if not data['uid'] in ntu.list:
@@ -83,7 +83,7 @@ async def combo_send(info):
 async def super_chat_message(info):
     data = info['data']['data']
     user_nickname = data['user_info']['uname']
-    text = config['danmakus']['sc'].format(name=user_nickname)
+    text = danmaku_template['sc'].format(name=user_nickname)
     if not data['uid'] in ntu.list:
         await send_danmaku(text=text, liveroom=liveroom)
     print_log('感谢{}的SC'.format(user_nickname))
