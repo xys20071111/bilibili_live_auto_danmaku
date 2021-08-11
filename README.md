@@ -1,6 +1,6 @@
 # bilibili_live_auto_danmaku
 
-[![LICENSE](https://img.shields.io/badge/LICENSE-GPLv3-red)](LICENSE)
+[![LICENSE](https://img.shields.io/github/license/xys20071111/bilibili_live_auto_danmaku)](LICENSE)
 ![Python](https://img.shields.io/badge/Python-3.9-blue)  
 B站直播弹幕助手----自动感谢礼物/开通舰长/续费舰长/SC
 只在Python 3.9下测试过
