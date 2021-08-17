@@ -1,5 +1,4 @@
 import time
-from .logger import print_log
 from bilibili_api.utils import Danmaku
 from bilibili_api import live
 

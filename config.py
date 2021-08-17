@@ -1,4 +1,5 @@
 import json
+import sys
 from bilibili_api import Credential, live
 
 
@@ -37,7 +38,14 @@ class _Config:
         return self._livedanmaku
 
 
-config_file = open('./config.json', mode='r', encoding='utf8')
+config_path = './config.json'
+def read_arg(argv):
+    if len(argv) > 1:
+        global config_path
+        config_path = argv[1]
+
+read_arg(sys.argv)
+config_file = open(config_path, mode='r', encoding='utf8')
 config_json = json.load(config_file)
 config_file.close()
 
