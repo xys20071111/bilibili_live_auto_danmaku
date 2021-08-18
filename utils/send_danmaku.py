@@ -1,4 +1,4 @@
-import time
+import asyncio
 from bilibili_api.utils import Danmaku
 from bilibili_api import live
 
@@ -11,4 +11,4 @@ async def send_danmaku(text,liveroom:live.LiveRoom):
         dan.append(Danmaku.Danmaku(text))
     for v in dan:
         await liveroom.send_danmaku(danmaku=v)
-        time.sleep(3)
+        await asyncio.sleep(3)

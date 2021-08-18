@@ -41,11 +41,14 @@ async def main():
     
     if function_list['guard_adveritse']:
         from guard_advertsing import guard_advertsing
+        global advertise_task
         advertise_task = asyncio.create_task(guard_advertsing())
-        await advertise_task
+        
 
     live_danmaku_task = asyncio.create_task(live_danmaku.connect())
     await live_danmaku_task
+    if function_list['guard_adveritse']:
+        await advertise_task
 
 if __name__ == '__main__':
     asyncio.run(main())

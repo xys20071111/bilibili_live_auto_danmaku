@@ -7,6 +7,7 @@ import asyncio
 from utils.logger import print_log
 from config import config
 from utils.send_danmaku import send_danmaku
+from utils.logger import print_log
 
 LIVEROOM = config.get_live_room()
 ADVERTISE = config.get_danmakes()['advertisment']
@@ -17,4 +18,5 @@ async def guard_advertsing():
     is_living:bool = (await LIVEROOM.get_room_info())['room_info']['live_status'] == 1
     if is_living:
         await send_danmaku(ADVERTISE,LIVEROOM)
+        print_log('发送宣传语')
     await asyncio.sleep(COLD_DOWN)
