@@ -4,7 +4,7 @@ from bilibili_api import Credential, live
 
 
 class _Config:
-    def __init__(self, room_id: int, credential: dict, optfunc: dict, danmaku_cold_down: int, danmakus: dict) -> None:
+    def __init__(self, room_id: int, credential: dict, optfunc: dict, danmaku_cold_down: int, danmakus: dict, advertising_cold_down: int) -> None:
         self._room_id = room_id
         self._credential = Credential(
             sessdata=credential['sessdata'], bili_jct=credential['csrf'], buvid3=credential['buvid3'])
@@ -15,6 +15,7 @@ class _Config:
             room_display_id=room_id, credential=self._credential)
         self._livedanmaku = live.LiveDanmaku(
             room_display_id=room_id, credential=self._credential)
+        self._advertising_cold_down = advertising_cold_down
 
     def get_room_id(self) -> int:
         return self._room_id
@@ -37,12 +38,18 @@ class _Config:
     def get_live_danmaku(self) -> live.LiveDanmaku:
         return self._livedanmaku
 
+    def get_advertising_cold_down(self) -> int:
+        return self._advertising_cold_down
+
 
 config_path = './config.json'
+
+
 def read_arg(argv):
     if len(argv) > 1:
         global config_path
         config_path = argv[1]
+
 
 read_arg(sys.argv)
 config_file = open(config_path, mode='r', encoding='utf8')
@@ -50,5 +57,5 @@ config_json = json.load(config_file)
 config_file.close()
 
 config = _Config(room_id=config_json['room_id'], credential=config_json['verify'], optfunc=config_json['optional_function'],
-                 danmaku_cold_down=config_json['cold_down_time'], danmakus=config_json['danmakus'])
+                 danmaku_cold_down=config_json['cold_down_time'], danmakus=config_json['danmakus'], advertising_cold_down=config_json['advertising_cold_down'])
 print('配置加载完毕')

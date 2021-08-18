@@ -18,6 +18,8 @@
         "gift_total": "感谢{name}投喂的一共{count}个{gift},感谢！",
         "guard": "感谢{name}的舰长",
         "sc": "感谢{name}的SC",
-        "unwelcome": "{name}入场，房管注意禁言"
-    }
+        "unwelcome": "{name}入场，房管注意禁言",
+        "advertisment":"～给主播点个关注吧～"
+    },
+    "advertising_cold_down":500
 }

@@ -1,46 +1,20 @@
 ##############################
 #                            #
-#       模块无法正常工作        #
+#          模块测试中          #
 #                            #
 ##############################
-import threading
-import time
-import json
 import asyncio
-from bilibili_api import live
-from bilibili_api.utils.Danmaku import Danmaku
 from utils.logger import print_log
+from config import config
 from utils.send_danmaku import send_danmaku
 
-class guard_advertsing(threading.Thread):
+LIVEROOM = config.get_live_room()
+ADVERTISE = config.get_danmakes()['advertisment']
+COLD_DOWN = config.get_advertising_cold_down()
+print_log('宣传语模块初始化完毕')
 
-    def __init__(self,credential,room_id):
-        super().__init__(daemon=True)
-        self.credential= credential
-        self.room_id = room_id
-        self._liveroom = live.LiveRoom(room_display_id=self.room_id,credential=credential)
-        self.is_living = False
-        with open('guard_advertsing_config.json',mode='r',encoding='utf8') as f:
-            self.config = json.load(f)
-        self._lock = threading.Lock()
-        print_log('宣传语模块初始化完毕')
-
-    def run(self):
-        while True:
-            self._lock.acquire()
-            if self.is_living:
-                asyncio.new_event_loop().run_until_complete(send_danmaku(self.config['advertise'],self._liveroom))
-                print_log('发送宣传语')
-            self._lock.release()
-            time.sleep(self.config['interval'])
-
-    def live_start(self):
-        self._lock.acquire()
-        self.is_living = True
-        self._lock.release()
-
-    def live_end(self):
-        self._lock.acquire()
-        self.is_living = False
-        self._lock.release()
-
+async def guard_advertsing():
+    is_living:bool = (await LIVEROOM.get_room_info())['room_info']['live_status'] == 1
+    if is_living:
+        await send_danmaku(ADVERTISE,LIVEROOM)
+    await asyncio.sleep(COLD_DOWN)

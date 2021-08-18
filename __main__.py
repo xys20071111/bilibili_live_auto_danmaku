@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
+print('B站直播场控系统v0.2')
 import asyncio
+from asyncio.tasks import create_task
 from utils.logger import print_log
 from config import config
 import danmaku_event
 
 
-def main():
+async def main():
     live_danmaku = config.get_live_danmaku()
 
     # 弹幕事件回调
@@ -36,9 +38,14 @@ def main():
         @live_danmaku.on('ALL')
         async def 调试信息(info):
             print(info['data']['cmd'])
-    asyncio.get_event_loop().run_until_complete(live_danmaku.connect())
+    
+    if function_list['guard_adveritse']:
+        from guard_advertsing import guard_advertsing
+        advertise_task = asyncio.create_task(guard_advertsing())
+        await advertise_task
 
+    live_danmaku_task = asyncio.create_task(live_danmaku.connect())
+    await live_danmaku_task
 
 if __name__ == '__main__':
-    print('B站直播场控系统v0.2')
-    main()
+    asyncio.run(main())
