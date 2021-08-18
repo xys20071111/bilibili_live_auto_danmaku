@@ -44,7 +44,7 @@ async def guard_buy(info):
     print_log('{}购买了舰长'.format(user_nickname))
 
 # 以下为感谢礼物的逻辑
-cold_time = {'last_cold_down': -1}
+last_cold_down = -1
 lock = asyncio.Lock()
 
 
@@ -60,10 +60,11 @@ async def send_gift(info):
     print_log(log_text)
     await lock.acquire()
     if lock.locked():
-        if (cold_time['last_cold_down'] + danmaku_cold_time) < int(time.time()) or cold_time['last_cold_down'] == -1:
+        if (last_cold_down + danmaku_cold_time) < int(time.time()) or last_cold_down == -1:
             if not data['uid'] in ntu.list:
                 await send_danmaku(text=text, liveroom=liveroom)
-                cold_time['last_cold_down'] = time.time()
+                global last_cold_down
+                last_cold_down = time.time()
         lock.release()
 # 以上为感谢礼物的逻辑
 
