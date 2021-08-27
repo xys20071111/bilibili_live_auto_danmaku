@@ -1,8 +1,4 @@
-##############################
-#                            #
-#          模块测试中          #
-#                            #
-##############################
+#宣传语模块
 import asyncio
 from utils.logger import print_log
 from config import config

@@ -14,7 +14,7 @@ class _Config:
         self._liveroom = live.LiveRoom(
             room_display_id=room_id, credential=self._credential)
         self._livedanmaku = live.LiveDanmaku(
-            room_display_id=room_id, credential=self._credential)
+            room_display_id=room_id, credential=self._credential, max_retry=1145141919810, retry_after=2)
         self._advertising_cold_down = advertising_cold_down
 
     def get_room_id(self) -> int:
