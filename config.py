@@ -3,59 +3,56 @@ import sys
 from bilibili_api import Credential, live
 
 
-class _Config:
-    def __init__(self, room_id: int, credential: dict, optfunc: dict, danmaku_cold_down: int, danmakus: dict, advertising_cold_down: int) -> None:
-        self._room_id = room_id
-        self._credential = Credential(
-            sessdata=credential['sessdata'], bili_jct=credential['csrf'], buvid3=credential['buvid3'])
-        self._optfunc = optfunc
-        self._danmaku_cold_down = danmaku_cold_down
-        self._danmakus = danmakus
-        self._liveroom = live.LiveRoom(
-            room_display_id=room_id, credential=self._credential)
-        self._livedanmaku = live.LiveDanmaku(
-            room_display_id=room_id, credential=self._credential, max_retry=1145141919810, retry_after=2)
-        self._advertising_cold_down = advertising_cold_down
+class __Config:
+    def __init__(self, conf_path: str) -> None:
+        with open(conf_path, mode='r', encoding='utf8') as f:
+            config = json.load(f)
+            self.__room_id = config['room_id']
+            credential = config['verify']
+            self.__credential = Credential(
+                sessdata=credential['sessdata'], bili_jct=credential['csrf'], buvid3=credential['buvid3'])
+            self.__optfunc = config['optional_function']
+            self.__danmaku_cold_down = config['cold_down_time']
+            self.__danmakus = config['danmakus']
+            self.__liveroom = live.LiveRoom(
+                room_display_id=config['room_id'], credential=self.__credential)
+            self.__livedanmaku = live.LiveDanmaku(
+                room_display_id=config['room_id'], credential=self.__credential, max_retry=1145141919810, retry_after=2)
+            self.__advertising_cold_down = config['advertising_cold_down']
 
     def get_room_id(self) -> int:
-        return self._room_id
+        return self.__room_id
 
     def get_credential(self) -> Credential:
-        return self._credential
+        return self.__credential
 
     def get_optfunc(self) -> dict:
-        return self._optfunc
+        return self.__optfunc
 
     def get_danmaku_cold_down_time(self) -> int:
-        return self._danmaku_cold_down
+        return self.__danmaku_cold_down
 
     def get_danmakes(self) -> dict:
-        return self._danmakus
+        return self.__danmakus
 
     def get_live_room(self) -> live.LiveRoom:
-        return self._liveroom
+        return self.__liveroom
 
     def get_live_danmaku(self) -> live.LiveDanmaku:
-        return self._livedanmaku
+        return self.__livedanmaku
 
     def get_advertising_cold_down(self) -> int:
-        return self._advertising_cold_down
+        return self.__advertising_cold_down
 
 
-config_path = './config.json'
+
+DEFAULT_CONFIG_PATH = './config.json'
+
+global config
+if len(sys.argv) > 1:  
+    config = __Config(sys.argv[1])
+else:
+    config = __Config(DEFAULT_CONFIG_PATH)
 
 
-def read_arg(argv):
-    if len(argv) > 1:
-        global config_path
-        config_path = argv[1]
-
-
-read_arg(sys.argv)
-config_file = open(config_path, mode='r', encoding='utf8')
-config_json = json.load(config_file)
-config_file.close()
-
-config = _Config(room_id=config_json['room_id'], credential=config_json['verify'], optfunc=config_json['optional_function'],
-                 danmaku_cold_down=config_json['cold_down_time'], danmakus=config_json['danmakus'], advertising_cold_down=config_json['advertising_cold_down'])
 print('配置加载完毕')
