@@ -1,5 +1,8 @@
 # bilibili_live_auto_danmaku
 
+## 因依赖项目 bilibili-api 停止维护，本项目暂停维护，等我找个代替品再回来搞这个
+## 请考虑 Node.js 版的弹幕助手
+
 [![LICENSE](https://img.shields.io/github/license/xys20071111/bilibili_live_auto_danmaku)](LICENSE)
 ![Python](https://img.shields.io/badge/Python-3.9-blue)  
 B站直播弹幕助手----自动感谢礼物/开通舰长/续费舰长/SC  
